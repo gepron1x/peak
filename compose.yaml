@@ -1,1 +1,41 @@
-services: {}
+name: peak
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: peak-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: peak
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: peak-app
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/peak
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+      SERVER_PORT: 8088
+    ports:
+      - "8088:8088"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
