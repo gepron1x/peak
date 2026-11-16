@@ -1,0 +1,12 @@
+.git
+.gradle
+.idea
+build
+out
+.env
+*.db
+Dockerfile
+compose.yaml
+docker-compose.yml
+HELP.md
+README.md
