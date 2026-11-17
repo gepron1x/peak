@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Отчеты')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="mb-3">
+        <h1 class="page-title mb-1">Отчеты</h1>
+        <p class="text-muted mb-0 small">
+            Период задается двумя календарными датами включительно. Для незавершенного восхождения
+            интервал продолжается до момента формирования отчета.
+        </p>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold">Отчет за период: восхождения и альпинисты (Ф07, Ф04)</div>
+        <div class="card-body">
+            <form method="get" th:action="@{/reports}" class="row g-3 align-items-end">
+                <div class="col-sm-4">
+                    <label class="form-label">Дата начала</label>
+                    <input type="date" class="form-control" name="from" th:value="${from}">
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Дата окончания</label>
+                    <input type="date" class="form-control" name="to" th:value="${to}">
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-dark w-100" type="submit">Построить отчет</button>
+                </div>
+            </form>
+
+            <div class="alert alert-danger py-2 mt-3 mb-0" th:if="${periodError}" th:text="${periodError}">Ошибка</div>
+
+            <p class="text-muted small mt-3 mb-0" th:if="${period == null and periodError == null}">
+                Выберите даты периода и нажмите «Построить отчет».
+            </p>
+
+            <div class="row g-4 mt-1" th:if="${period != null}">
+                <div class="col-lg-6">
+                    <h2 class="h6 mb-2">Восхождения за период (Ф07)</h2>
+                    <div class="table-responsive border rounded">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Группа</th>
+                                <th>Гора</th>
+                                <th>Начало</th>
+                                <th>Окончание</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="a : ${period.ascents}">
+                                <td>
+                                    <a class="text-decoration-none fw-semibold"
+                                       th:href="@{/ascents/{id}(id=${a.id})}"
+                                       th:text="${a.groupName}">Группа</a>
+                                </td>
+                                <td th:text="${a.mountainName}">Гора</td>
+                                <td th:text="${@fmt.dateTime(a.start)}">01.06.2026 08:00</td>
+                                <td>
+                                    <span th:if="${a.end != null}" th:text="${@fmt.dateTime(a.end)}">03.06.2026 18:00</span>
+                                    <span class="text-muted" th:if="${a.end == null}">не завершено</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(period.ascents)}">
+                                <td colspan="4" class="text-center text-muted py-3">Записей не найдено</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h2 class="h6 mb-2">Альпинисты за период (Ф04)</h2>
+                    <div class="table-responsive border rounded">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th style="width: 3.5rem;">ID</th>
+                                <th>ФИО</th>
+                                <th>Телефон</th>
+                                <th>Адрес</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="c : ${period.climbers}">
+                                <td class="text-muted" th:text="${c.id}">1</td>
+                                <td class="fw-semibold" th:text="${c.fullName}">ФИО</td>
+                                <td class="text-nowrap" th:text="${c.phone}">+7 (900) 000-00-00</td>
+                                <td th:text="${c.address}">Адрес</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(period.climbers)}">
+                                <td colspan="4" class="text-center text-muted py-3">Записей не найдено</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold">Завершенные восхождения альпиниста по горам (Ф06)</div>
+        <div class="card-body">
+            <form method="get" th:action="@{/reports}" class="row g-3 align-items-end">
+                <div class="col-sm-8">
+                    <label class="form-label">Альпинист</label>
+                    <select class="form-select" name="climberId">
+                        <option value="">— выберите альпиниста —</option>
+                        <option th:each="c : ${climbers}" th:value="${c.id}"
+                                th:selected="${climberStats != null and climberStats.climber.id == c.id}"
+                                th:text="|#${c.id} · ${c.fullName} · ${c.phone}|">Альпинист</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-dark w-100" type="submit">Показать статистику</button>
+                </div>
+            </form>
+
+            <div class="alert alert-danger py-2 mt-3 mb-0" th:if="${climberStatsError}" th:text="${climberStatsError}">Ошибка</div>
+
+            <div class="mt-3" th:if="${climberStats != null}">
+                <p class="mb-2">
+                    <span class="fw-semibold" th:text="${climberStats.climber.fullName}">ФИО</span>
+                    <span class="text-muted small" th:text="| · #${climberStats.climber.id} · ${climberStats.climber.phone} · ${climberStats.climber.address}|"></span>
+                </p>
+                <div class="table-responsive border rounded">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Гора</th>
+                            <th class="text-end">Завершенных восхождений</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="row : ${climberStats.mountains}">
+                            <td>
+                                <a class="text-decoration-none" th:href="@{/mountains/{id}(id=${row.mountainId})}"
+                                   th:text="${row.mountainName}">Гора</a>
+                            </td>
+                            <td class="text-end fw-semibold" th:text="${row.ascents}">0</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(climberStats.mountains)}">
+                            <td colspan="2" class="text-center text-muted py-3">Записей не найдено</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white fw-semibold">Разные альпинисты на каждой горе (Ф09)</div>
+        <div class="card-body">
+            <p class="text-muted small">Учитываются только завершенные восхождения. Повторное участие одного человека на одной горе не увеличивает показатель.</p>
+            <div class="table-responsive border rounded">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Гора</th>
+                        <th class="text-end">Разных альпинистов</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${mountainStats}">
+                        <td>
+                            <a class="text-decoration-none" th:href="@{/mountains/{id}(id=${row.mountainId})}"
+                               th:text="${row.mountainName}">Гора</a>
+                        </td>
+                        <td class="text-end fw-semibold" th:text="${row.climbers}">0</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(mountainStats)}">
+                        <td colspan="2" class="text-center text-muted py-3">Записей не найдено</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

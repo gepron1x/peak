@@ -2,7 +2,7 @@ name: peak
 
 services:
   db:
-    image: postgres:alpine
+    image: postgres:18-alpine
     container_name: peak-db
     restart: unless-stopped
     environment:
@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
@@ -30,9 +30,12 @@ services:
       DB_URL: jdbc:postgresql://db:5432/peak
       DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+      APP_USERNAME: ${APP_USERNAME:-operator}
+      APP_PASSWORD: ${APP_PASSWORD:?APP_PASSWORD must be set in .env}
+      APP_SEED_DEMO_DATA: ${APP_SEED_DEMO_DATA:-false}
       SERVER_PORT: 8088
     ports:
-      - "8088:8088"
+      - "${APP_PORT:-8088}:8088"
     depends_on:
       db:
         condition: service_healthy

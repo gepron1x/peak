@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Изменение вершины')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4" style="max-width: 640px;">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <a class="small text-decoration-none" th:href="@{/mountains}">&larr; Все горы</a>
+    <h1 class="page-title mt-1 mb-3">Изменение вершины</h1>
+
+    <div class="alert alert-warning" th:if="${hasAscents}">
+        На вершину уже зарегистрированы восхождения. Изменение данных будет отклонено (Ф03).
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/mountains/{id}/edit(id=${mountainId})}" th:object="${form}" method="post" novalidate>
+                <div class="alert alert-danger py-2 mb-3" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Ошибка</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Название</label>
+                    <input type="text" class="form-control" th:field="*{name}"
+                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''">
+                    <div class="invalid-feedback" th:errors="*{name}">Ошибка</div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label">Высота, м</label>
+                        <input type="number" min="1" class="form-control" th:field="*{height}"
+                               th:classappend="${#fields.hasErrors('height')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{height}">Ошибка</div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Страна</label>
+                        <input type="text" class="form-control" th:field="*{country}"
+                               th:classappend="${#fields.hasErrors('country')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{country}">Ошибка</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Район</label>
+                    <input type="text" class="form-control" th:field="*{region}"
+                           th:classappend="${#fields.hasErrors('region')} ? 'is-invalid' : ''">
+                    <div class="invalid-feedback" th:errors="*{region}">Ошибка</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-dark" type="submit">Сохранить изменения</button>
+                    <a class="btn btn-outline-secondary" th:href="@{/mountains}">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

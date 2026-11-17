@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Восхождения')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="mb-3">
+        <h1 class="page-title mb-1">Восхождения</h1>
+        <p class="text-muted mb-0 small">Группа создается вместе с восхождением на выбранную гору (Ф08). Участники добавляются на странице восхождения.</p>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold">Новое восхождение</div>
+        <div class="card-body">
+            <form th:action="@{/ascents}" th:object="${form}" method="post" novalidate>
+                <div class="alert alert-danger py-2 mb-3" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Ошибка</div>
+                </div>
+
+                <div class="row g-3 align-items-start">
+                    <div class="col-md-4">
+                        <label class="form-label">Название группы</label>
+                        <input type="text" class="form-control" th:field="*{groupName}"
+                               th:classappend="${#fields.hasErrors('groupName')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{groupName}">Ошибка</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Гора</label>
+                        <select class="form-select" th:field="*{mountainId}"
+                                th:classappend="${#fields.hasErrors('mountainId')} ? 'is-invalid' : ''">
+                            <option value="">— выберите гору —</option>
+                            <option th:each="m : ${mountains}" th:value="${m.id}"
+                                    th:text="|${m.name} · ${m.height} м|">Гора</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{mountainId}">Ошибка</div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Начало</label>
+                        <input type="datetime-local" class="form-control" th:field="*{startTime}"
+                               th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:errors="*{startTime}">Ошибка</div>
+                    </div>
+
+                    <div class="col-md-1 d-grid">
+                        <label class="form-label d-none d-md-block">&nbsp;</label>
+                        <button class="btn btn-dark" type="submit">ОК</button>
+                    </div>
+                </div>
+
+                <div class="small text-muted mt-2" th:if="${#lists.isEmpty(mountains)}">
+                    Сначала добавьте гору в <a th:href="@{/mountains}">справочнике гор</a>.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white fw-semibold">Все восхождения</div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th style="width: 4rem;">ID</th>
+                    <th>Группа</th>
+                    <th>Гора</th>
+                    <th>Начало</th>
+                    <th>Окончание</th>
+                    <th class="text-end">Участников</th>
+                    <th class="text-end"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${ascents}">
+                    <td class="text-muted" th:text="${a.id}">1</td>
+                    <td class="fw-semibold" th:text="${a.groupName}">Группа</td>
+                    <td th:text="${a.mountainName}">Гора</td>
+                    <td th:text="${@fmt.dateTime(a.start)}">01.06.2026 08:00</td>
+                    <td>
+                        <span th:if="${a.end != null}" th:text="${@fmt.dateTime(a.end)}">03.06.2026 18:00</span>
+                        <span class="text-muted" th:if="${a.end == null}">не завершено</span>
+                    </td>
+                    <td class="text-end" th:text="${a.participantCount}">0</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary"
+                           th:href="@{/ascents/{id}(id=${a.id})}">Состав и завершение</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ascents)}">
+                    <td colspan="7" class="text-center text-muted py-4">Записей не найдено</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

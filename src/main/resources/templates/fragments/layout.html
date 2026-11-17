@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' — АльпКлуб'">АльпКлуб</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        body { background-color: #f6f7f9; }
+        .card { border-color: #e3e6ea; }
+        .table > :not(caption) > * > * { padding: .65rem .75rem; }
+        .stat-value { font-size: 1.9rem; font-weight: 600; line-height: 1.1; }
+        .page-title { font-size: 1.6rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-dark" style="background-color: #1f2937;">
+    <div class="container flex-wrap gap-2 py-1">
+        <a class="navbar-brand fw-semibold mb-0" th:href="@{/}">АльпКлуб</a>
+        <div class="d-flex flex-wrap gap-1 me-auto">
+            <a class="btn btn-sm btn-outline-light" th:href="@{/mountains}">Горы</a>
+            <a class="btn btn-sm btn-outline-light" th:href="@{/climbers}">Альпинисты</a>
+            <a class="btn btn-sm btn-outline-light" th:href="@{/ascents}">Восхождения</a>
+            <a class="btn btn-sm btn-outline-light" th:href="@{/reports}">Отчеты</a>
+        </div>
+        <form th:action="@{/logout}" method="post" class="mb-0">
+            <button class="btn btn-sm btn-outline-secondary" type="submit">Выйти</button>
+        </form>
+    </div>
+</nav>
+
+<div th:fragment="alerts">
+    <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-danger" role="alert" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<footer th:fragment="footer" class="text-center text-muted small py-4">
+    АльпКлуб · учет восхождений · Московский Политех
+</footer>
+
+</body>
+</html>

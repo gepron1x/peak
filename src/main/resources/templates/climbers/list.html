@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Альпинисты')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="mb-3">
+        <h1 class="page-title mb-1">Альпинисты</h1>
+        <p class="text-muted mb-0 small">Справочник участников восхождений. Одинаковые имена допустимы, выбор выполняется по идентификатору.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th style="width: 4rem;">ID</th>
+                            <th>Фамилия</th>
+                            <th>Имя</th>
+                            <th>Отчество</th>
+                            <th>Телефон</th>
+                            <th>Адрес</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="c : ${climbers}">
+                            <td class="text-muted" th:text="${c.id}">1</td>
+                            <td class="fw-semibold" th:text="${c.lastName}">Фамилия</td>
+                            <td th:text="${c.firstName}">Имя</td>
+                            <td th:text="${c.middleName}">Отчество</td>
+                            <td class="text-nowrap" th:text="${c.phone}">+7 (900) 000-00-00</td>
+                            <td th:text="${c.address}">Адрес</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(climbers)}">
+                            <td colspan="6" class="text-center text-muted py-4">Записей не найдено</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white fw-semibold">Добавить альпиниста</div>
+                <div class="card-body">
+                    <form th:action="@{/climbers}" th:object="${form}" method="post" novalidate>
+                        <div class="alert alert-danger py-2 mb-3" th:if="${#fields.hasGlobalErrors()}">
+                            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Ошибка</div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Фамилия</label>
+                                <input type="text" class="form-control" th:field="*{lastName}"
+                                       th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:errors="*{lastName}">Ошибка</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Имя</label>
+                                <input type="text" class="form-control" th:field="*{firstName}"
+                                       th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:errors="*{firstName}">Ошибка</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Отчество</label>
+                                <input type="text" class="form-control" th:field="*{middleName}"
+                                       th:classappend="${#fields.hasErrors('middleName')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:errors="*{middleName}">Ошибка</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" th:field="*{phone}"
+                                       placeholder="+7 (900) 000-00-00"
+                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:errors="*{phone}">Ошибка</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Адрес</label>
+                            <input type="text" class="form-control" th:field="*{address}"
+                                   th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:errors="*{address}">Ошибка</div>
+                        </div>
+
+                        <button class="btn btn-dark w-100" type="submit">Сохранить альпиниста</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

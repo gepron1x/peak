@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Восхождения горы')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <a class="small text-decoration-none" th:href="@{/mountains}">&larr; Все горы</a>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mt-1 mb-3">
+        <div>
+            <h1 class="page-title mb-1" th:text="${data.mountain.name}">Гора</h1>
+            <div class="text-muted small">
+                <span th:text="${data.mountain.country}">Страна</span> ·
+                <span th:text="${data.mountain.region}">Район</span> ·
+                <span th:text="${data.mountain.height} + ' м'">0 м</span>
+            </div>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/ascents}">Все восхождения</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white fw-semibold">Восхождения и состав групп (Ф01)</div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Группа</th>
+                    <th>Начало</th>
+                    <th>Окончание</th>
+                    <th>Состав</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${data.ascents}">
+                    <td>
+                        <a class="fw-semibold text-decoration-none"
+                           th:href="@{/ascents/{id}(id=${a.id})}"
+                           th:text="${a.groupName}">Группа</a>
+                    </td>
+                    <td th:text="${@fmt.dateTime(a.start)}">01.06.2026 08:00</td>
+                    <td>
+                        <span th:if="${a.end != null}" th:text="${@fmt.dateTime(a.end)}">03.06.2026 18:00</span>
+                        <span class="text-muted" th:if="${a.end == null}">не завершено</span>
+                    </td>
+                    <td>
+                        <span th:each="p, it : ${a.participants}">
+                            <span th:text="${p.fullName}">ФИО</span><span th:if="${!it.last}">, </span>
+                        </span>
+                        <span class="text-muted" th:if="${#lists.isEmpty(a.participants)}">—</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(data.ascents)}">
+                    <td colspan="4" class="text-center text-muted py-4">Записей не найдено</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

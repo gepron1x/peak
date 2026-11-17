@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Главная')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1 class="page-title mb-1">АльпКлуб</h1>
+    <p class="text-muted">Единая база восхождений альпинистского клуба</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">Горы</div>
+                    <div class="stat-value" th:text="${mountainCount}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">Альпинисты</div>
+                    <div class="stat-value" th:text="${climberCount}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">Восхождения</div>
+                    <div class="stat-value" th:text="${ascentCount}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">Не завершены</div>
+                    <div class="stat-value" th:text="${activeAscentCount}">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Быстрые действия</h2>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-dark" th:href="@{/mountains}">Справочник гор</a>
+                <a class="btn btn-outline-dark" th:href="@{/climbers}">Справочник альпинистов</a>
+                <a class="btn btn-outline-dark" th:href="@{/ascents}">Восхождения и состав групп</a>
+                <a class="btn btn-outline-dark" th:href="@{/reports}">Отчеты</a>
+            </div>
+            <hr>
+            <p class="text-muted small mb-0">
+                Реализованы функции Ф01–Ф09: списки по горе и периоду, справочники, состав групп,
+                статистика по горам и альпинистам.
+            </p>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
