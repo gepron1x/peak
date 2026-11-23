@@ -120,3 +120,5 @@ src/main/resources
 ├── static/css   — Bootstrap
 └── templates    — Thymeleaf-страницы
 ```
+
+Проверка автоматической сборки TeamCity.
